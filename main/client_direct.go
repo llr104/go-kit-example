@@ -5,13 +5,18 @@ import (
 	"fmt"
 	httptransport "github.com/go-kit/kit/transport/http"
 	"go-kit-example/service"
+	"go-kit-example/utils"
 	"net/url"
 )
 
+
+
 func main(){
 
-
-	u, _ := url.Parse("http://127.0.0.1:9988")
+	/*
+		直连api服务
+	*/
+	u, _ := url.Parse(utils.ApiUrl)
 
 	client := httptransport.NewClient("GET", u, service.EncodeEchoReq, service.DecodeEchoRsp)
 	endpoint := client.Endpoint()

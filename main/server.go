@@ -36,7 +36,8 @@ func main() {
 
 	exit := make(chan bool, 1)
 	go func() {
-		http.ListenAndServe(":9988", r)
+		s := fmt.Sprintf(":%s", utils.ApiPort)
+		http.ListenAndServe(s, r)
 		exit <- true
 	}()
 

@@ -7,6 +7,9 @@ import (
 
 var client *api.Client
 var serverId = "s1"
+
+const ApiUrl = "http://127.0.0.1:9988"
+const ApiPort = "9988"
 func init() {
 	cfg := api.DefaultConfig()
 	c, err := api.NewClient(cfg)
