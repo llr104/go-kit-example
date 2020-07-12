@@ -1,16 +1,18 @@
 package utils
 
 import (
+	"fmt"
+	"github.com/google/uuid"
 	"github.com/hashicorp/consul/api"
 	"log"
 )
 
 var client *api.Client
-var S1Name = "s1"
+var sName = "s1"
+var sPort = 9988
+var sId = uuid.New().String()
 
-const ApiUrl = "http://127.0.0.1:9988"
-const ApiPort = "9988"
-const ConsulAddr = "127.0.0.1:8500"
+var ConsulAddr = "127.0.0.1:8500"
 
 func init() {
 	cfg := api.DefaultConfig()
@@ -24,6 +26,11 @@ func init() {
 	}
 }
 
+func SetConfig(serverName string, port int)  {
+	sName = serverName
+	sPort = port
+}
+
 func Register() {
 
 	m := make(map[string]string)
@@ -31,13 +38,15 @@ func Register() {
 	m["k2"] = "value2"
 
 	c := api.AgentServiceCheck{}
-	c.HTTP = "http://127.0.0.1:9988/health"
+
+	h := fmt.Sprintf("http://127.0.0.1:%d%s", sPort, "/health")
+	c.HTTP = h
 	c.Interval = "5s"
 
 	r := api.AgentServiceRegistration{}
-	r.Name = "s1"
-	r.ID = S1Name
-	r.Port = 9988
+	r.Name = sName
+	r.ID = sId
+	r.Port = sPort
 	r.Address = "127.0.0.1"
 	r.Tags = []string{"test"}
 	r.Meta = m
@@ -48,5 +57,5 @@ func Register() {
 }
 
 func UnRegister()  {
-	client.Agent().ServiceDeregister(S1Name)
+	client.Agent().ServiceDeregister(sId)
 }

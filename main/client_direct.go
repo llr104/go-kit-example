@@ -2,10 +2,10 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	httptransport "github.com/go-kit/kit/transport/http"
 	"go-kit-example/service"
-	"go-kit-example/utils"
 	"net/url"
 )
 
@@ -16,17 +16,29 @@ func main(){
 	/*
 		直连api服务
 	*/
-	u, _ := url.Parse(utils.ApiUrl)
 
-	client := httptransport.NewClient("GET", u, service.EncodeEchoReq, service.DecodeEchoRsp)
-	endpoint := client.Endpoint()
+	urlstr := flag.String("url", "", "服务url")
+	flag.Parse()
 
-	req := service.EchoRequest{Text:"hello echo"}
-	rsp, err := endpoint(context.Background(), req)
-	if err != nil{
-		fmt.Printf("error: %s\n", err.Error())
+	if *urlstr == ""{
+		fmt.Println("请指定服务url")
+		return
+	}
+
+
+	if u, err := url.Parse(*urlstr); err == nil{
+		client := httptransport.NewClient("GET", u, service.EncodeEchoReq, service.DecodeEchoRsp)
+		endpoint := client.Endpoint()
+
+		req := service.EchoRequest{Text:"hello echo"}
+		rsp, err := endpoint(context.Background(), req)
+		if err != nil{
+			fmt.Printf("error: %s\n", err.Error())
+		}else{
+			fmt.Printf("echo rsp:%v\n", rsp)
+		}
 	}else{
-		fmt.Printf("echo rsp:%v\n", rsp)
+		fmt.Println("服务url错误")
 	}
 
 }

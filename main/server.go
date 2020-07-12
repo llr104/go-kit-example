@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	httptransport "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
@@ -15,9 +16,18 @@ import (
 
 func main() {
 
+	name := flag.String("name", "", "服务名")
+	port := flag.Int("port", 0, "端口")
+	flag.Parse()
+
+	if *name == "" || *port == 0{
+		fmt.Println("服务名或端口未指定")
+		return
+	}
+
+	utils.SetConfig(*name, *port)
 
 	utils.Register()
-
 	s1 := httptransport.NewServer(service.HelloEnpoint(&service.Api{}), service.DecodeHello, service.EncodeHello)
 	s2 := httptransport.NewServer(service.EchoEndpoint(&service.Api{}), service.DecodeEchoReq, service.EncodeEchoRsp)
 
@@ -36,7 +46,7 @@ func main() {
 
 	exit := make(chan bool, 1)
 	go func() {
-		s := fmt.Sprintf(":%s", utils.ApiPort)
+		s := fmt.Sprintf(":%d", *port)
 		http.ListenAndServe(s, r)
 		exit <- true
 	}()
