@@ -10,7 +10,7 @@ import (
 var client *api.Client
 var sName = "s1"
 var sPort = 9988
-var sId = uuid.New().String()
+var SId = uuid.New().String()
 
 var ConsulAddr = "127.0.0.1:8500"
 
@@ -45,7 +45,7 @@ func Register() {
 
 	r := api.AgentServiceRegistration{}
 	r.Name = sName
-	r.ID = sId
+	r.ID = SId
 	r.Port = sPort
 	r.Address = "127.0.0.1"
 	r.Tags = []string{"test"}
@@ -57,5 +57,5 @@ func Register() {
 }
 
 func UnRegister()  {
-	client.Agent().ServiceDeregister(sId)
+	client.Agent().ServiceDeregister(SId)
 }

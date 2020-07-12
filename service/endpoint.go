@@ -2,6 +2,7 @@ package service
 import (
 	"context"
 	"github.com/go-kit/kit/endpoint"
+	"go-kit-example/utils"
 )
 
 type HelloRequest struct {
@@ -18,6 +19,7 @@ type EchoRequest struct {
 
 type EchoResponse struct {
 	Text string `json:"result"`
+	SId  string `json:"sId"`
 }
 
 
@@ -35,6 +37,7 @@ func EchoEndpoint(api IApi) endpoint.Endpoint{
 		r := request.(*EchoRequest)
 		return EchoResponse{
 			Text:api.Echo(r.Text),
+			SId:utils.SId,
 		}, nil
 	}
 }

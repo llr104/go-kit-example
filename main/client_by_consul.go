@@ -8,6 +8,7 @@ import (
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/sd"
 	"github.com/go-kit/kit/sd/consul"
+	"github.com/go-kit/kit/sd/lb"
 	httptransport "github.com/go-kit/kit/transport/http"
 	consulapi "github.com/hashicorp/consul/api"
 	"go-kit-example/service"
@@ -15,6 +16,7 @@ import (
 	"io"
 	"net/url"
 	"os"
+	"time"
 )
 
 func main() {
@@ -52,15 +54,43 @@ func main() {
 	endpoints, _ := endpointer.Endpoints()
 	fmt.Printf("endpoints len:%d\n", len(endpoints))
 	if len(endpoints) >0{
-		endpoint := endpoints[0]
 
-		req := service.EchoRequest{Text:"hello echo"}
-		rsp, err := endpoint(context.Background(), req)
-		if err != nil{
-			fmt.Printf("error: %s\n", err.Error())
-		}else{
-			fmt.Printf("echo rsp:%v\n", rsp)
+		{
+			//指定访问第一个服
+			endpoint := endpoints[0]
+			req := service.EchoRequest{Text:"hello echo"}
+			rsp, err := endpoint(context.Background(), req)
+			if err != nil{
+				fmt.Printf("first endpoint error: %s\n", err.Error())
+			}else{
+				fmt.Printf("first endpoint echo rsp:%v\n", rsp)
+			}
 		}
+
+
+		{
+			//简单负载均衡
+			bin := lb.NewRoundRobin(endpointer)
+
+			for   {
+				endpoint, err := bin.Endpoint()
+				if err != nil {
+					fmt.Printf("NewRoundRobin error:%s\n", err.Error())
+				}else{
+					req := service.EchoRequest{Text:"hello echo"}
+					rsp, err := endpoint(context.Background(), req)
+					if err != nil{
+						fmt.Printf("NewRoundRobin endpoint error: %s\n", err.Error())
+					}else{
+						fmt.Printf("NewRoundRobin endpoint echo rsp:%v\n", rsp)
+					}
+				}
+
+				time.Sleep(1*time.Second)
+			}
+
+		}
+
 	}
 
 }
