@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	httptransport "github.com/go-kit/kit/transport/http"
-	"go-kit-test/service"
+	"go-kit-example/service"
 	"net/url"
 )
 

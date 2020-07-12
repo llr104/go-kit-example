@@ -1,4 +1,4 @@
-module go-kit-test
+module go-kit-example
 
 go 1.13
 
