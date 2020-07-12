@@ -6,12 +6,16 @@ import (
 )
 
 var client *api.Client
-var serverId = "s1"
+var S1Name = "s1"
 
 const ApiUrl = "http://127.0.0.1:9988"
 const ApiPort = "9988"
+const ConsulAddr = "127.0.0.1:8500"
+
 func init() {
 	cfg := api.DefaultConfig()
+	cfg.Address = ConsulAddr
+
 	c, err := api.NewClient(cfg)
 	if err != nil{
 		log.Fatal("api client error\n")
@@ -32,7 +36,7 @@ func Register() {
 
 	r := api.AgentServiceRegistration{}
 	r.Name = "s1"
-	r.ID = serverId
+	r.ID = S1Name
 	r.Port = 9988
 	r.Address = "127.0.0.1"
 	r.Tags = []string{"test"}
@@ -44,5 +48,5 @@ func Register() {
 }
 
 func UnRegister()  {
-	client.Agent().ServiceDeregister(serverId)
+	client.Agent().ServiceDeregister(S1Name)
 }
